@@ -1,0 +1,17 @@
+{
+    "network": {
+        "servers": [ "shipper:5043" ],
+		"ssl key": "/etc/ssl/selfsigned.key",
+        "ssl ca": "/etc/ssl/selfsigned.crt"
+    },
+    "files": [
+        {
+            "paths":  [ "/var/log/random/*.log" ],
+            "fields": { "type": "random-forwarder" }
+        },
+		{
+            "paths":  [ "/var/log/apache/*.log" ],
+            "fields": { "type": "apache-forwarder" }
+        }
+    ]
+}

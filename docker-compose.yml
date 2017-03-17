@@ -26,6 +26,15 @@ services:
    - ./logs/apache:/var/log/apache
   links:
    - shipper
+ forwarder:
+  image: apopelo/logstash-forwarder
+  volumes:
+   - ./logstash-forwarder/config:/etc/logstash-forwarder
+   - ./logstash-forwarder/ssl:/etc/ssl
+   - ./logs/random:/var/log/random
+   - ./logs/apache:/var/log/apache
+  links:
+   - shipper
  ####################
  # Logstash shipper #
  ####################
@@ -38,6 +47,7 @@ services:
   volumes:
    - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
    - ./logstash/shipper/pipeline/:/usr/share/logstash/pipeline/
+   - ./logstash/shipper/ssl:/ssl
  ########################
  # Kafka infrastructure #
  ########################
