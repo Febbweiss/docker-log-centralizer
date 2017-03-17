@@ -11,7 +11,7 @@ Embedded containers
  7. [Kibana](https://www.elastic.co/products/kibana) - The visualization / dashboard tool for ElasticSearch
  8. [Kafka Manager](https://github.com/yahoo/kafka-manager) - The Kafka cluster web manager
  9. [Apache log generator](https://github.com/Febbweiss/docker-apache-log-generator) - A container generating fake apache logs
- 10.[Random log generator](https://hub.docker.com/r/davidmccormick/random_log_generator) - A container genrating text logs (Star Wars quotes)
+ 10. [Random log generator](https://hub.docker.com/r/davidmccormick/random_log_generator) - A container genrating text logs (Star Wars quotes)
 
 How it works
 -
