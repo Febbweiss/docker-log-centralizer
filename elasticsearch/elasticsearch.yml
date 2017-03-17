@@ -1,0 +1,5 @@
+cluster.name: "docker-FEC"
+network.host: 0.0.0.0
+discovery.zen.minimum_master_nodes: 1
+#action.auto_create_index: .security,.monitoring*,.watches,.triggered_watches,.watcher-history*
+xpack.security.enabled: false

@@ -1,0 +1,100 @@
+version: '2'
+
+services:
+ #################
+ # Log producers #
+ #################
+ apache_log_generator:
+  image: febbweiss/apache-log-generator
+  volumes:
+   - ./logs/apache:/var/log/apache
+   - ./config/timezone:/etc/timezone
+   - ./config/timezone:/etc/localtime
+ random_log_generator: # Star Wars quote generator
+  image: davidmccormick/random_log_generator
+  command: python log_generator.py --logFile /var/log/random/random.log
+  volumes:
+   - ./logs/random:/var/log/random
+ #############
+ # Log agent #
+ #############
+ filebeat:
+  image: nguoianphu/docker-filebeat
+  volumes:
+   - ./filebeat/filebeat.yml:/filebeat.yml
+   - ./logs/random:/var/log/random
+   - ./logs/apache:/var/log/apache
+  links:
+   - shipper
+ ####################
+ # Logstash shipper #
+ ####################
+ shipper:
+  image: docker.elastic.co/logstash/logstash:5.2.2
+  ports:
+   - "5400:5400"
+  links:
+   - kafka
+  volumes:
+   - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+   - ./logstash/shipper/pipeline/:/usr/share/logstash/pipeline/
+ ########################
+ # Kafka infrastructure #
+ ########################
+ zookeeper:
+  image: wurstmeister/zookeeper
+  ports:
+   - "2181:2181"
+ kafka:
+  image: wurstmeister/kafka
+  ports:
+   - "9092:9092"
+  links:
+   - zookeeper:zk
+  environment:
+   KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
+   KAFKA_ADVERTISED_PORT: 9092
+   KAFKA_ZOOKEEPER_CONNECT: zk:2181
+ #################
+ # Elasticsearch #
+ #################
+ elasticsearch:
+  image: docker.elastic.co/elasticsearch/elasticsearch:5.2.2
+  volumes:
+   - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+  ports:
+   - "9200:9200"
+   - "9300:9300"
+ ####################
+ # Logstash indexer #
+ ####################
+ indexer:
+  image: docker.elastic.co/logstash/logstash:5.2.2
+  ports:
+   - "5401:5400"
+  volumes:
+   - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+   - ./logstash/indexer/pipeline/:/usr/share/logstash/pipeline/
+  links:
+   - kafka
+   - elasticsearch
+ ###########
+ # Tooling #
+ ###########
+ kibana:
+  image: docker.elastic.co/kibana/kibana:5.2.2
+  ports:
+   - "5601:5601"
+  volumes:
+   - ./kibana/kibana.yml:/etc/kibana/kibana.yml
+  links:
+   - elasticsearch
+ kafka-manager:
+  image: sheepkiller/kafka-manager
+  ports:
+   - "9000:9000"
+  links:
+   - zookeeper
+   - kafka
+  environment:
+   ZK_HOSTS: "zookeeper:2181"
