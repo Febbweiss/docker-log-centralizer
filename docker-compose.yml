@@ -8,8 +8,6 @@ services:
   image: febbweiss/apache-log-generator
   volumes:
    - ./logs/apache:/var/log/apache
-   - ./config/timezone:/etc/timezone
-   - ./config/timezone:/etc/localtime
  random_log_generator: # Star Wars quote generator
   image: davidmccormick/random_log_generator
   command: python log_generator.py --logFile /var/log/random/random.log
