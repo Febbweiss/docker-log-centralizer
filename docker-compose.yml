@@ -8,6 +8,10 @@ services:
   image: febbweiss/apache-log-generator
   volumes:
    - ./logs/apache:/var/log/apache
+ java_log_generator:
+  image: febbweiss/java-log-generator
+  volumes:
+   - ./logs/java:/var/log/java
  random_log_generator: # Star Wars quote generator
   image: davidmccormick/random_log_generator
   command: python log_generator.py --logFile /var/log/random/random.log
@@ -31,6 +35,14 @@ services:
    - ./logstash-forwarder/ssl:/etc/ssl
    - ./logs/random:/var/log/random
    - ./logs/apache:/var/log/apache
+  links:
+   - shipper
+ rsyslog:
+  image: camptocamp/rsyslog-bin
+  volumes:
+   - ./rsyslog/conf.d:/etc/rsyslog-confd
+   - ./rsyslog/rsyslog.conf:/etc/rsyslog.conf
+   - ./logs/java:/var/log/java
   links:
    - shipper
  ####################
